@@ -3,13 +3,18 @@ const url = 'mongodb+srv://admin:admin@cluster0.dorlyyd.mongodb.net/BE_CHAT?retr
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true});
 
 const Schema = mongoose.Schema;
-const AccountSchema = new Schema({
-    username: String,
+const UserSchema = new Schema({
+    userName: String,
     password: String,
+    firstName: String,
+    lastName: String,
+    birthDate: String,
+    email: String,
+    phoneNumber: String,
 },{
-    collection: 'account'
+    collection: 'user'
 });
 
-const AccountModel = mongoose.model('account', AccountSchema);
+const UserModel = mongoose.model('user', UserSchema);
 
-module.exports = AccountModel;
+module.exports = UserModel;

@@ -1,33 +1,48 @@
 const express = require('express');
 var bodyParser = require('body-parser');
-const AcccountModel = require('../models/account');
+const UserModel = require('../models/UserModel');
 const routerUser = express.Router();
 
 routerUser.use(bodyParser.urlencoded({ extended: false }));
 routerUser.use(bodyParser.json());
-
-routerUser.get('/', (req, res) => {
-    res.json({ message: 'test' });
+ 
+routerUser.get('/', (req, res, next) => {
+    UserModel.find({})
+        .then((users) => {
+            res.json(users);
+        })
+        .catch((err) => {
+            res.status(500).json('get user fail');
+        })
 });
-
-routerUser.post('/register', (req, res, next) => {
-    var username = req.body.username;
+routerUser.post('/', (req, res, next) => {
+    var userName = req.body.userName;
     var password = req.body.password;
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
+    var birthDate = req.body.birthDate;
+    var email = req.body.email;
+    var phoneNumber = req.body.phoneNumber;
 
-    AcccountModel.findOne({ username: username })
+    UserModel.findOne({ userName: userName })
         .then((account) => {
             if (account) {
                 res.status(500).json('username already exists');
             }
             else {
-                return AcccountModel.create({
-                    username: username,
-                    password: password
+                return UserModel.create({
+                    userName: userName,
+                    password: password,
+                    firstName: firstName,
+                    lastName: lastName,
+                    birthDate: birthDate,
+                    email: email,
+                    phoneNumber: phoneNumber
                 })
             }
         })
-        .then(() => {
-            res.json('register success');
+        .then((data) => {
+            res.status(200).json(data);
         })
         .catch((err) => {
             res.status(500).json('register fail');
@@ -35,10 +50,10 @@ routerUser.post('/register', (req, res, next) => {
 });
 
 routerUser.post('/login', (req, res, next) => {
-    var username = req.body.username;
+    var userName = req.body.userName;
     var password = req.body.password;
 
-    AcccountModel.findOne({ username: username, password: password })
+    UserModel.findOne({ userName: userName, password: password })
         .then((account) => {
             if (account) {
                 res.json(account);
