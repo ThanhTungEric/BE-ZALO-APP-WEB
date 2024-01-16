@@ -4,17 +4,14 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true});
 
 const Schema = mongoose.Schema;
 const UserSchema = new Schema({
-    userName: String,
     password: String,
-    firstName: String,
-    lastName: String,
+    fullName: String,
     birthDate: String,
     email: String,
     phoneNumber: String,
+    status: String,
 },{
     collection: 'user'
 });
-
 const UserModel = mongoose.model('user', UserSchema);
-
 module.exports = UserModel;

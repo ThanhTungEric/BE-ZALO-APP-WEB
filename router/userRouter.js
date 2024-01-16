@@ -16,44 +16,41 @@ routerUser.get('/', (req, res, next) => {
         })
 });
 routerUser.post('/', (req, res, next) => {
-    var userName = req.body.userName;
     var password = req.body.password;
-    var firstName = req.body.firstName;
-    var lastName = req.body.lastName;
+    var fullName = req.body.fullName;
     var birthDate = req.body.birthDate;
     var email = req.body.email;
     var phoneNumber = req.body.phoneNumber;
+    var status = req.body.status;
 
-    UserModel.findOne({ userName: userName })
+    UserModel.findOne({ phoneNumber: phoneNumber })
         .then((account) => {
             if (account) {
-                res.status(500).json('username already exists');
+                res.status(500).json('phonenumber already exists');
             }
             else {
                 return UserModel.create({
-                    userName: userName,
                     password: password,
-                    firstName: firstName,
-                    lastName: lastName,
+                    fullName: fullName,
                     birthDate: birthDate,
                     email: email,
-                    phoneNumber: phoneNumber
+                    phoneNumber: phoneNumber,
+                    status: status,
                 })
             }
         })
         .then((data) => {
-            res.status(200).json(data);
+            res.status(201).json(data);
         })
         .catch((err) => {
             res.status(500).json('register fail');
         })
 });
-
 routerUser.post('/login', (req, res, next) => {
-    var userName = req.body.userName;
+    var phoneNumber = req.body.phoneNumber;
     var password = req.body.password;
 
-    UserModel.findOne({ userName: userName, password: password })
+    UserModel.findOne({ phoneNumber: phoneNumber, password: password })
         .then((account) => {
             if (account) {
                 res.json(account);
@@ -67,5 +64,4 @@ routerUser.post('/login', (req, res, next) => {
         })
 
 });
-
 module.exports = routerUser;
