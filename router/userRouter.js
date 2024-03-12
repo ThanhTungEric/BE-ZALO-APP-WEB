@@ -43,8 +43,10 @@ routerUser.post('/', (req, res, next) => {
             res.status(201).json(data);
         })
         .catch((err) => {
-            res.status(500).json('register fail');
-        })
+            console.error(err);
+            res.status(500).json({ error: err.message });
+        });
+        
 });
 //get user by id
 routerUser.get('/:id', async (req, res) => {
