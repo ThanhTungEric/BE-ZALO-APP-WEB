@@ -1,5 +1,12 @@
 const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+
 var app = express();
+require('dotenv').config();
+
+app.use(express.json());
+app.use(cors());
 
 const routerUser = require('./router/userRouter');
 const routerMessage = require('./router/messageRouter');
@@ -14,6 +21,14 @@ app.use(function (req, res, next) {
 app.use('/user/', routerUser);
 app.use('/message', routerMessage); 
 
-app.listen(8080, () => {
-    console.log('Example app listening on port 8080!');
+const port = process.env.PORT || 8080;
+const uri = process.env.ATLAS_URI;
+
+app.listen(port, (req, res) => {
+    console.log(`Example app listening on port: ${port}!`);
 });
+
+mongoose.connect(uri,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log('MongoDB Connected...')).catch(err => console.log(err));
