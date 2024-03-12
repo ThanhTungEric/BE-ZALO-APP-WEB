@@ -46,6 +46,53 @@ routerUser.post('/', (req, res, next) => {
             res.status(500).json('register fail');
         })
 });
+//get user by id
+routerUser.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await UserModel.findById(id);
+        res.status(200).json(user);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//update user
+routerUser.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await UserModel.findByIdAndUpdate(id, req.body);
+        if (!user) {
+            return res.status(404).json({ "can't find user with this id": id });
+        }
+        const updateProduct = await userModel.findById(id);
+        res.status(200).json(updateProduct);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+}
+);
+//delete user
+routerUser.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await UserModel.findByIdAndDelete(id);
+        if (!user) {
+            return res.status(404).json({ "can't find user with this id": id });
+        }
+        res.status(200).json(user);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+}
+);
+
 routerUser.post('/login', (req, res, next) => {
     var phoneNumber = req.body.phoneNumber;
     var password = req.body.password;
