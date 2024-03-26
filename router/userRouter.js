@@ -5,7 +5,7 @@ const routerUser = express.Router();
 
 routerUser.use(bodyParser.urlencoded({ extended: false }));
 routerUser.use(bodyParser.json());
- 
+
 routerUser.get('/', (req, res, next) => {
     UserModel.find({})
         .then((users) => {
@@ -46,10 +46,10 @@ routerUser.post('/', (req, res, next) => {
             console.error(err);
             res.status(500).json({ error: err.message });
         });
-        
+
 });
 //get user by id
-routerUser.get('/:id', async (req, res) => {
+routerUser.get('/id/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const user = await UserModel.findById(id);
@@ -60,6 +60,7 @@ routerUser.get('/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 //update user
 routerUser.put('/:id', async (req, res) => {

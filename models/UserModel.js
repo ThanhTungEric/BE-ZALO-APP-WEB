@@ -7,9 +7,8 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-        unique: true,
         validate: {
-            validator: function(v) {
+            validator: function (v) {
                 if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/.test(v)) {
                     throw new Error('Mật khẩu không đủ mạnh! Yêu cầu ít nhất một chữ viết hoa, một chữ viết thường, một số và một ký tự đặc biệt.');
                 }
@@ -30,7 +29,6 @@ const UserSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
         validate: {
             validator: function (v) {
                 return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(v); // Kiểm tra xem chuỗi có đúng định dạng email không
