@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const url = process.env.ATLAS_URI;
+const socket = require('socket.io');
 
 var app = express();
 require('dotenv').config();
@@ -10,7 +12,6 @@ app.use(cors());
 
 const routerUser = require('./router/userRouter');
 const routerMessage = require('./router/messageRouter');
-const userModel = require('./models/UserModel');
 
 
 app.use(function (req, res, next) {
@@ -22,18 +23,17 @@ app.use(function (req, res, next) {
 
 app.use('/user/', routerUser);
 app.use('/message', routerMessage);
+app.use('/friend', require('./router/friendRouter'));
+app.use('/api/messages', require('./router/messageRouter'));
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
-});
-app.get('/test', (req, res) => {
-    res.send('Hello Test!');
 });
 
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
-app.listen(port, (req, res) => {
+const server = app.listen(port, (req, res) => {
     console.log(`Example app listening on port: ${port}!`);
 });
 
@@ -42,4 +42,26 @@ mongoose.connect(uri,{
     useUnifiedTopology: true
 }).then(() => console.log('MongoDB Connected...')).catch(err => console.log(err));
 
+const io = socket(server,{
+    cors: {
+        origin: 'http://localhost:3000',
+        credential: true,
+    }
+});
+
+global.onlineUsers = new Map();
+io.on('connection', (socket) => {
+    global.chatSocket = socket;
+    socket.on('add-user', (userId) => {
+        onlineUsers.set(userId, socket.id);
+        console.log(onlineUsers);
+    });
+    socket.on('send-msg', (data) => {
+        const sendUsserSocket = onlineUsers.get(data.to);
+        if(sendUsserSocket){
+            socket.to(sendUsserSocket).emit('receive-msg', data);
+        }
+    });
+});
+        
 module.exports = app;

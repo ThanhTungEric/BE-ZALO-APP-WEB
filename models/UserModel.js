@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const url = 'mongodb+srv://admin:admin@cluster0.dorlyyd.mongodb.net/BE_CHAT?retryWrites=true&w=majority';
+require('dotenv').config();
+const url = process.env.ATLAS_URI;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const Schema = mongoose.Schema;
@@ -39,6 +40,7 @@ const UserSchema = new Schema({
     phoneNumber: {
         type: String,
         required: true,
+        unique: true,
         validate: {
             validator: function (v) {
                 return /\d{10}/.test(v); // Kiểm tra xem chuỗi có đúng 10 ký tự số không
