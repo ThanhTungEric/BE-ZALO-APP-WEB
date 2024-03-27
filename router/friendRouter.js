@@ -31,13 +31,22 @@ router.get('/get-friend/:userId', async (req, res) => {
 router.post('/add-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
-        const friend = new friendModel({
-            idUser1: idUser1,
-            idUser2: idUser2,
-            status: 1,
-            actionUserId: idUser1
+        const friend = await friendModel.findOne({
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ]
         });
-        await friend.save();
+        if (friend) {
+            res.status(400).json({ message: "Friend request already sent" });
+            return;
+        }
+        const newFriend = new friendModel({
+            idUser1,
+            idUser2,
+            status: 1
+        });
+        await newFriend.save();
         res.json({ message: "Friend request sent" });
     } catch (err) {
         console.error("Error adding friend:", err);
@@ -49,8 +58,10 @@ router.post('/accept-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
         const friend = await friendModel.findOne({
-            idUser1: idUser1,
-            idUser2: idUser2,
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ],
             status: 1
         });
         if (!friend) {
@@ -71,8 +82,10 @@ router.post('/unfriend-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
         const friend = await friendModel.findOne({
-            idUser1: idUser1,
-            idUser2: idUser2,
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ],
             status: 2
         });
         if (!friend) {
@@ -93,8 +106,10 @@ router.post('/reject-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
         const friend = await friendModel.findOne({
-            idUser1: idUser1,
-            idUser2: idUser2,
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ],
             status: 1
         });
         if (!friend) {
