@@ -37,6 +37,10 @@ const UserSchema = new Schema({
             message: props => `${props.value} không phải là một email hợp lệ!`
         }
     },
+    avatar: {
+        type: String,
+        default: 'https://avatarchatapp.s3.ap-southeast-1.amazonaws.com/download.png'
+    },
     phoneNumber: {
         type: String,
         required: true,
