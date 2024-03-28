@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 const routerUser = require('./router/userRouter');
-const routerMessage = require('./router/messageRouter');
+
 
 
 app.use(function (req, res, next) {
@@ -22,9 +22,8 @@ app.use(function (req, res, next) {
 });
 
 app.use('/user/', routerUser);
-app.use('/message', routerMessage);
 app.use('/friend', require('./router/friendRouter'));
-app.use('/api/messages', require('./router/messageRouter'));
+app.use('/api/messages', require('./router/apiMesage'));
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -50,18 +49,18 @@ const io = socket(server,{
 });
 
 global.onlineUsers = new Map();
-io.on('connection', (socket) => {
-    global.chatSocket = socket;
-    socket.on('add-user', (userId) => {
-        onlineUsers.set(userId, socket.id);
-        console.log(onlineUsers);
-    });
-    socket.on('send-msg', (data) => {
-        const sendUsserSocket = onlineUsers.get(data.to);
-        if(sendUsserSocket){
-            socket.to(sendUsserSocket).emit('receive-msg', data);
-        }
-    });
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
 });
         
 module.exports = app;

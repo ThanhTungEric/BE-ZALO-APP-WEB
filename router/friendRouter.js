@@ -44,7 +44,8 @@ router.post('/add-friend', async (req, res) => {
         const newFriend = new friendModel({
             idUser1,
             idUser2,
-            status: 1
+            status: 1,
+            actionUserId: idUser1
         });
         await newFriend.save();
         res.json({ message: "Friend request sent" });
