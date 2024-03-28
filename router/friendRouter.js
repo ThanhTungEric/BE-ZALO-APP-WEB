@@ -116,13 +116,22 @@ router.post('/reject-friend', async (req, res) => {
             res.status(404).json({ message: "Friend request not found" });
             return;
         }
-        await friend.remove();
+        // Use deleteOne() to remove the document
+        await friendModel.deleteOne({
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ],
+            status: 1
+        });
         res.json({ message: "Friend request rejected" });
     } catch (err) {
         console.error("Error rejecting friend:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
 //Lay danh sach ban be
 router.get('/get-add-friend/:userId', async (req, res) => {
     const userId = req.params.userId;
