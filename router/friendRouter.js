@@ -135,7 +135,7 @@ router.post('/reject-friend', async (req, res) => {
 });
 
 
-//Lay danh sach nhung nguoi da gui loi moi ket ban
+//Lay danh sach ban be
 router.get('/get-add-friend/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
