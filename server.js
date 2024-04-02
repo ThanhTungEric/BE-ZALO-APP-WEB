@@ -29,11 +29,14 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+const hostName = "192.168.1.8";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
-const server = app.listen(port, (req, res) => {
-    console.log(`Example app listening on port: ${port}!`);
+
+
+const server = app.listen(port, hostName, () => {
+    console.log(`Example app listening on: http://${hostName}:${port}/`);
 });
 
 mongoose.connect(uri,{

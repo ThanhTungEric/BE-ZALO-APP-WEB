@@ -61,6 +61,22 @@ routerUser.get('/id/:id', async (req, res) => {
     }
 });
 
+// get usser by phone number
+routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
+    try {
+        const { phoneNumber } = req.params;
+        const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+        if (!user) {
+            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber });
+        }
+        res.status(200).json(user);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 //update user
 routerUser.put('/:id', async (req, res) => {
