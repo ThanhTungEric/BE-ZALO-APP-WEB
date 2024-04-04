@@ -28,6 +28,7 @@ router.get('/get-friend/:userId', async (req, res) => {
     }
 });
 
+// Gui loi moi ket ban
 router.post('/add-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -55,6 +56,7 @@ router.post('/add-friend', async (req, res) => {
     }
 });
 
+// Chap nhan loi moi ket ban
 router.post('/accept-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -78,7 +80,7 @@ router.post('/accept-friend', async (req, res) => {
     }
 });
 
-//Xoa ban be
+// Unfriend
 router.post('/unfriend-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -133,7 +135,7 @@ router.post('/reject-friend', async (req, res) => {
 });
 
 
-//Lay danh sach ban be
+//Lay danh sach nhung nguoi da gui loi moi ket ban
 router.get('/get-add-friend/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
