@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ThanhTungEric/BE-ZALO-APP-WEB#readme",
   "dependencies": {
     "aws-sdk": "^2.1585.0",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",

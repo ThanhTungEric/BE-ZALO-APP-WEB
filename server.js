@@ -12,8 +12,6 @@ app.use(cors());
 
 const routerUser = require('./router/userRouter');
 
-
-
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -29,11 +27,9 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-const hostName = "192.168.1.8";
+const hostName = "192.168.1.7";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
-
-
 
 const server = app.listen(port, hostName, () => {
     console.log(`Example app listening on: http://${hostName}:${port}/`);

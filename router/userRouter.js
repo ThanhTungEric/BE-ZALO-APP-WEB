@@ -2,6 +2,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const UserModel = require('../models/UserModel');
 const routerUser = express.Router();
+const bcrypt = require('bcrypt');
 
 routerUser.use(bodyParser.urlencoded({ extended: false }));
 routerUser.use(bodyParser.json());
@@ -15,8 +16,8 @@ routerUser.get('/', (req, res, next) => {
             res.status(500).json('get user fail');
         })
 });
-routerUser.post('/', (req, res, next) => {
-    var password = req.body.password;
+routerUser.post('/', async (req, res, next) => {
+    var password = await bcrypt.hash(req.body.password, 10);
     var fullName = req.body.fullName;
     var birthDate = req.body.birthDate;
     var email = req.body.email;
@@ -112,22 +113,23 @@ routerUser.delete('/:id', async (req, res) => {
 }
 );
 
-routerUser.post('/login', (req, res, next) => {
-    var phoneNumber = req.body.phoneNumber;
-    var password = req.body.password;
-
-    UserModel.findOne({ phoneNumber: phoneNumber, password: password })
-        .then((account) => {
-            if (account) {
-                res.json(account);
-            }
-            else {
-                res.status(400).json('Account not found');
-            }
-        })
-        .catch((err) => {
-            res.status(500).json('login fail');
-        })
-
+routerUser.post('/login', async (req, res, next) => {
+    try{
+        const { phoneNumber, password } = req.body;
+        const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+        if (!user) {
+            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber, status: false });
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(404).json({ "password is incorrect": password, status: false });
+        }
+        delete user.password;
+        res.status(200).json(user);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
 });
 module.exports = routerUser;

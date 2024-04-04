@@ -8,14 +8,7 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-        validate: {
-            validator: function (v) {
-                if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/.test(v)) {
-                    throw new Error('Mật khẩu không đủ mạnh! Yêu cầu ít nhất một chữ viết hoa, một chữ viết thường, một số và một ký tự đặc biệt.');
-                }
-                return true;
-            }
-        }
+        min: 8,
     },
     fullName: {
         type: String,
