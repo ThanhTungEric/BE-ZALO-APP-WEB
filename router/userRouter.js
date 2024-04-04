@@ -63,23 +63,6 @@ routerUser.get('/id/:id', async (req, res) => {
     }
 });
 
-// get usser by phone number
-routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
-    try {
-        const { phoneNumber } = req.params;
-        const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-        if (!user) {
-            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber });
-        }
-        res.status(200).json(user);
-    }
-    catch (err) {
-        console.log(err.message);
-        res.status(500).json({ message: err.message });
-    }
-});
-
-
 
 //update user
 routerUser.put('/phoneNumber/:phoneNumber', async (req, res) => {
@@ -114,18 +97,31 @@ routerUser.delete('/:id', async (req, res) => {
 }
 );
 
-routerUser.post('/login', async (req, res, next) => {
+routerUser.post('/login', (req, res, next) => {
+    var phoneNumber = req.body.phoneNumber;
+    var password = req.body.password;
+
+    UserModel.findOne({ phoneNumber: phoneNumber, password: password })
+        .then((account) => {
+            if (account) {
+                res.json(account);
+            }
+            else {
+                res.status(400).json('Account not found');
+            }
+        })
+        .catch((err) => {
+            res.status(500).json('login fail');
+        })
+});
+// get usser by phone number
+routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
     try {
-        const { phoneNumber, password } = req.body;
+        const { phoneNumber } = req.params;
         const user = await UserModel.findOne({ phoneNumber: phoneNumber });
         if (!user) {
-            return res.status(405).json({ "can't find user with this phoneNumber": phoneNumber, status: false });
+            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber });
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(404).json({ "password is incorrect": password, status: false });
-        }
-        delete user.password;
         res.status(200).json(user);
     }
     catch (err) {
