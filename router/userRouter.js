@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 const UserModel = require('../models/UserModel');
 const routerUser = express.Router();
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 routerUser.use(bodyParser.urlencoded({ extended: false }));
 routerUser.use(bodyParser.json());
@@ -87,7 +88,7 @@ routerUser.put('/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({ "can't find user with this id": id });
         }
-        const updateProduct = await userModel.findById(id);
+        const updateProduct = await UserModel.findById(id);
         res.status(200).json(updateProduct);
     }
     catch (err) {
@@ -132,4 +133,72 @@ routerUser.post('/login', async (req, res, next) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+//send new password to email
+routerUser.post('/forgotPassword', async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await UserModel.findOne({ email: email });
+        if (!user) {
+            return res.status(404).json({ "can't find user with this email": email });
+        }
+        const newPassword = Math.random().toString(36).substring(2, 10);
+        var password = await bcrypt.hash(newPassword, 10);
+        await UserModel.findByIdAndUpdate(user._id, { password: password });
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'cotachat@gmail.com',
+                pass: 's h j w i t j a s b l q a j i s'
+            }
+        });
+        var mailOptions = {
+            from: 'cotachat@gmail.com',
+            to: email,
+            subject: 'New password',
+            text: `Your new password is: ${newPassword}`
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ message: error.message });
+            } else {
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({ message: 'Email sent: ' + info.response });
+            }
+        });
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+}
+);
+// change password
+routerUser.put('/changePassword/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        var lastpassword = req.body.lastpassword;
+        var newpassword = req.body.newpassword;
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ "can't find user with this id": id });
+        }
+        const isPasswordValid = await bcrypt.compare(lastpassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(404).json({ "password is incorrect": lastpassword });
+        }
+        var password = await bcrypt.hash(newpassword, 10);
+        const updateUser = await UserModel
+            .findByIdAndUpdate(id, {
+                password: password
+            });
+        res.status(200).json(updateUser);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+}
+);
 module.exports = routerUser;

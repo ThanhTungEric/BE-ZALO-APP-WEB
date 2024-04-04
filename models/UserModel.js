@@ -28,7 +28,8 @@ const UserSchema = new Schema({
                 return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(v); // Kiểm tra xem chuỗi có đúng định dạng email không
             },
             message: props => `${props.value} không phải là một email hợp lệ!`
-        }
+        },
+        unique: true
     },
     avatar: {
         type: String,
