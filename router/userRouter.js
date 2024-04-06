@@ -80,6 +80,7 @@ routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
 });
 
 
+
 //update user
 routerUser.put('/:id', async (req, res) => {
     try {
@@ -119,7 +120,7 @@ routerUser.post('/login', async (req, res, next) => {
         const { phoneNumber, password } = req.body;
         const user = await UserModel.findOne({ phoneNumber: phoneNumber });
         if (!user) {
-            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber, status: false });
+            return res.status(405).json({ "can't find user with this phoneNumber": phoneNumber, status: false });
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -155,8 +156,8 @@ routerUser.post('/forgotPassword', async (req, res, next) => {
         var mailOptions = {
             from: 'cotachat@gmail.com',
             to: email,
-            subject: 'New password',
-            text: `Your new password is: ${newPassword}`
+            subject: 'MẬT KHẨU MỚI CỦA BẠN',
+            text: `Mật khẩu mới của bạn là: ${newPassword}. Hãy thay đổi mật khẩu ngay sau khi đăng nhập.`
         };
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
