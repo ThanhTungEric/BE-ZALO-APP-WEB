@@ -27,7 +27,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// const hostName = "192.168.243.199";
 const hostName = "192.168.1.10";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
