@@ -28,6 +28,7 @@ router.get('/get-friend/:userId', async (req, res) => {
     }
 });
 
+// Gui loi moi ket ban
 router.post('/add-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -55,6 +56,7 @@ router.post('/add-friend', async (req, res) => {
     }
 });
 
+// Chap nhan loi moi ket ban
 router.post('/accept-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -78,7 +80,7 @@ router.post('/accept-friend', async (req, res) => {
     }
 });
 
-//Xoa ban be
+// Unfriend
 router.post('/unfriend-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
@@ -117,14 +119,23 @@ router.post('/reject-friend', async (req, res) => {
             res.status(404).json({ message: "Friend request not found" });
             return;
         }
-        await friend.remove();
+        // Use deleteOne() to remove the document
+        await friendModel.deleteOne({
+            $or: [
+                { idUser1: idUser1, idUser2: idUser2 },
+                { idUser1: idUser2, idUser2: idUser1 }
+            ],
+            status: 1
+        });
         res.json({ message: "Friend request rejected" });
     } catch (err) {
         console.error("Error rejecting friend:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 });
-//Lay danh sach ban be
+
+
+//Lay danh sach nhung nguoi da gui loi moi ket ban
 router.get('/get-add-friend/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {

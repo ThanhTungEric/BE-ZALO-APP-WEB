@@ -33,7 +33,7 @@ const UserSchema = new Schema({
     },
     avatar: {
         type: String,
-        default: 'https://avatarchatapp.s3.ap-southeast-1.amazonaws.com/download.png'
+        default: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/user.png'
     },
     phoneNumber: {
         type: String,

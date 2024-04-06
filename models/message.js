@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 const url = process.env.ATLAS_URI;
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const Schema = mongoose.Schema;
-const MessageSchema = new Schema(  {
-    message: {
-      text: { type: String, required: true },
-    },
-    users: Array,
-    sender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+const MessageSchema = new Schema({
+  message: {
+    text: { type: String, required: true },
   },
+  users: Array,
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  recalled: { type: Boolean, default: false } // Thêm trường để đánh dấu trạng thái thu hồi của tin nhắn
+},
   {
     timestamps: true,
   });

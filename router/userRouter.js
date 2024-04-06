@@ -82,22 +82,21 @@ routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
 
 
 //update user
-routerUser.put('/:id', async (req, res) => {
+routerUser.put('/phoneNumber/:phoneNumber', async (req, res) => {
     try {
-        const { id } = req.params;
-        const user = await UserModel.findByIdAndUpdate(id, req.body);
+        const { phoneNumber } = req.params;
+        const user = await UserModel.findOneAndUpdate({ phoneNumber: phoneNumber }, req.body, { new: true });
         if (!user) {
-            return res.status(404).json({ "can't find user with this id": id });
+            return res.status(404).json({ "message": "Không tìm thấy người dùng với số điện thoại này" });
         }
-        const updateProduct = await UserModel.findById(id);
-        res.status(200).json(updateProduct);
+        res.status(200).json(user);
     }
     catch (err) {
         console.log(err.message);
         res.status(500).json({ message: err.message });
     }
-}
-);
+});
+
 //delete user
 routerUser.delete('/:id', async (req, res) => {
     try {
@@ -116,7 +115,7 @@ routerUser.delete('/:id', async (req, res) => {
 );
 
 routerUser.post('/login', async (req, res, next) => {
-    try{
+    try {
         const { phoneNumber, password } = req.body;
         const user = await UserModel.findOne({ phoneNumber: phoneNumber });
         if (!user) {
