@@ -8,14 +8,7 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-        validate: {
-            validator: function (v) {
-                if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/.test(v)) {
-                    throw new Error('Mật khẩu không đủ mạnh! Yêu cầu ít nhất một chữ viết hoa, một chữ viết thường, một số và một ký tự đặc biệt.');
-                }
-                return true;
-            }
-        }
+        min: 8,
     },
     fullName: {
         type: String,
@@ -35,11 +28,12 @@ const UserSchema = new Schema({
                 return /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(v); // Kiểm tra xem chuỗi có đúng định dạng email không
             },
             message: props => `${props.value} không phải là một email hợp lệ!`
-        }
+        },
+        unique: true
     },
     avatar: {
         type: String,
-        default: 'https://avatarchatapp.s3.ap-southeast-1.amazonaws.com/download.png'
+        default: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/user.png'
     },
     phoneNumber: {
         type: String,
