@@ -63,22 +63,6 @@ routerUser.get('/id/:id', async (req, res) => {
     }
 });
 
-// get usser by phone number
-routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
-    try {
-        const { phoneNumber } = req.params;
-        const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-        if (!user) {
-            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber });
-        }
-        res.status(200).json(user);
-    }
-    catch (err) {
-        console.log(err.message);
-        res.status(500).json({ message: err.message });
-    }
-});
-
 
 //update user
 routerUser.put('/phoneNumber/:phoneNumber', async (req, res) => {
@@ -132,6 +116,21 @@ routerUser.post('/login', async (req, res, next) => {
         res.status(500).json({ message: err.message });
     }
 });
+// get usser by phone number
+routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
+    try {
+        const { phoneNumber } = req.params;
+        const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+        if (!user) {
+            return res.status(404).json({ "can't find user with this phoneNumber": phoneNumber });
+        }
+        res.status(200).json(user);
+    }
+    catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+});
 
 //send new password to email
 routerUser.post('/forgotPassword', async (req, res, next) => {
@@ -154,8 +153,8 @@ routerUser.post('/forgotPassword', async (req, res, next) => {
         var mailOptions = {
             from: 'cotachat@gmail.com',
             to: email,
-            subject: 'New password',
-            text: `Your new password is: ${newPassword}`
+            subject: 'MẬT KHẨU MỚI CỦA BẠN',
+            text: `Mật khẩu mới của bạn là: ${newPassword}. Hãy thay đổi mật khẩu ngay sau khi đăng nhập.`
         };
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
