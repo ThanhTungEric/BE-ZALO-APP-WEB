@@ -56,6 +56,7 @@ module.exports.deleteMessageById = async (req, res, next) => {
     next(ex);
   }
 };
+
 module.exports.recallMessageById = async (req, res, next) => {
   try {
     const messageId = req.params.id; // Lấy id của tin nhắn từ URL params
@@ -63,6 +64,8 @@ module.exports.recallMessageById = async (req, res, next) => {
     const result = await Messages.updateOne({ _id: messageId }, { $set: { recalled: true, 'message.text': '' } });
 
     if (result.modifiedCount > 0) {
+      // Gửi sự kiện "msg-recall" về cho client thông qua socket.io
+      // io.emit("msg-recall", { messageId });
       return res.json({ msg: "Message recalled successfully." });
     } else {
       return res.status(404).json({ msg: "Message not found or already recalled." });
@@ -71,6 +74,8 @@ module.exports.recallMessageById = async (req, res, next) => {
     next(ex);
   }
 };
+
+
 
 
 
