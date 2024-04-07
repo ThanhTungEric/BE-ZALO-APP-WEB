@@ -1,5 +1,7 @@
 const express = require('express');
 const uploadRouter =  express.Router();
+const bodyParser = require('body-parser');
+
 uploadRouter.use(bodyParser.urlencoded({ extended: false }));
 uploadRouter.use(bodyParser.json());
 ///UPFILE

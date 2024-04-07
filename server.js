@@ -42,7 +42,7 @@ mongoose.connect(uri, {
 
 const io = socket(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://192.168.1.8:8081'],
     credential: true,
   }
 });
@@ -55,6 +55,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
+  socket.on("delete-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
