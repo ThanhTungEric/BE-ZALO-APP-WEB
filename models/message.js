@@ -14,7 +14,6 @@ const MessageSchema = new Schema({
     ref: "User",
     required: true,
   },
-  recalled: { type: Boolean, default: false } // Thêm trường để đánh dấu trạng thái thu hồi của tin nhắn
 },
   {
     timestamps: true,

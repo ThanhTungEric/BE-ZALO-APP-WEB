@@ -60,11 +60,15 @@ io.on("connection", (socket) => {
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
     }
   });
-  socket.on("delete-msg", (data) => {
-    const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
-    }
+  //delete-msg
+  socket.on("delete-msg", async (data) => {
+    const { messageId } = data;
+    io.emit("msg-delete", { messageId });
+  });
+  //recall-msg
+  socket.on("recall-msg", async (data) => {
+    const { messageId } = data;
+    io.emit("msg-recall", { messageId });
   });
 });
 
