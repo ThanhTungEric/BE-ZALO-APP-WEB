@@ -5,6 +5,40 @@ const routerUser = express.Router();
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 
+//upload file
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const { S3Client } = require('@aws-sdk/client-s3');
+const shortId = require('shortid');
+require('dotenv').config();
+const s3 = new S3Client({
+    region: process.env.REGION,
+    credentials: {
+        accessKeyId: process.env.ACCESS_KEY_ID,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    },
+    sslEnabled: false,
+    s3ForcePathStyle: true,
+    signatureVersion: 'v4',
+});
+
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.S3_BUCKET_NAME,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        acl: 'public-read',
+        metadata: function (req, file, cb) {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: function (req, file, cb) {
+            cb(null, shortId.generate() + '-' + file.originalname);
+        },
+    }),
+});
+//upload file
+
+
 routerUser.use(bodyParser.urlencoded({ extended: false }));
 routerUser.use(bodyParser.json());
 
@@ -17,13 +51,14 @@ routerUser.get('/', (req, res, next) => {
             res.status(500).json('get user fail');
         })
 });
-routerUser.post('/', async (req, res, next) => {
+routerUser.post('/', upload.single('avatar'), async (req, res) => {
     var password = await bcrypt.hash(req.body.password, 10);
     var fullName = req.body.fullName;
     var birthDate = req.body.birthDate;
     var email = req.body.email;
     var phoneNumber = req.body.phoneNumber;
     var status = req.body.status;
+    var avatar = req.file ? req.file.location : 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/user.png';
 
     UserModel.findOne({ phoneNumber: phoneNumber })
         .then((account) => {
@@ -38,6 +73,7 @@ routerUser.post('/', async (req, res, next) => {
                     email: email,
                     phoneNumber: phoneNumber,
                     status: status,
+                    avatar: avatar
                 })
             }
         })

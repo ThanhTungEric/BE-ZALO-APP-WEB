@@ -32,8 +32,7 @@ const UserSchema = new Schema({
         unique: true
     },
     avatar: {
-        type: String,
-        default: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/user.png'
+        type: String
     },
     phoneNumber: {
         type: String,
