@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { S3Client } = require('@aws-sdk/client-s3');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const shortId = require('shortid');
+const AWS = require('aws-sdk');
 
 require('dotenv').config();
 
@@ -37,5 +38,18 @@ module.exports = { upload };
 router.post('/file', upload.single('file'), (req, res) => {
   res.json(req.file.location);
 });
+router.get('/download', async (req, res, next) => {
+  var fileKey = req.query['fileKey'];
+  var s3 = new AWS.S3({});
+  var options = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: fileKey,
+  };
+  s3.getObject(options, function (err, data) {
+    res.attachment(file);
+    res.send(data.Body);
+  });
+});
+
 
 module.exports = router;

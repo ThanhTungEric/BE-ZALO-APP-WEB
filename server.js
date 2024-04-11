@@ -47,10 +47,16 @@ const io = socket(server, {
     credential: true,
   }
 });
-
+let isConnected = false;
 global.onlineUsers = new Map();
 io.on("connection", (socket) => {
   global.chatSocket = socket;
+  isConnected = true;
+
+  socket.on("disconnect", () => {
+    isConnected = false;
+  });
+
   socket.on("add-user", (userId) => {
     onlineUsers.set(userId, socket.id);
   });
