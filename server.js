@@ -28,7 +28,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "192.168.1.6";
+// const hostName = "192.168.1.28";
+const hostName = "192.168.1.84"
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -71,6 +72,14 @@ io.on("connection", (socket) => {
     const { messageId } = data;
     io.emit("msg-recall", { messageId });
   });
+  //video call dùng socket và ZegoUIKitPrebuilt
+  socket.on('initiate-call', (data) => {
+    const { receiverId } = data;
+    // Xử lý và phản hồi lại cho máy khách
+    // ở đây có thể thực hiện kiểm tra và các thao tác khác
+    io.emit('call-initiated', { message: 'Cuộc gọi đã được khởi tạo' });
+  });
+
 });
 
 module.exports = app;

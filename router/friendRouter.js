@@ -84,7 +84,7 @@ router.post('/accept-friend', async (req, res) => {
 router.post('/unfriend-friend', async (req, res) => {
     const { idUser1, idUser2 } = req.body;
     try {
-        const friend = await friendModel.findOne({
+        const friend = await friendModel.findOneAndDelete({
             $or: [
                 { idUser1: idUser1, idUser2: idUser2 },
                 { idUser1: idUser2, idUser2: idUser1 }
@@ -95,8 +95,6 @@ router.post('/unfriend-friend', async (req, res) => {
             res.status(404).json({ message: "UnFriend request not found" });
             return;
         }
-        friend.status = 0;
-        await friend.save();
         res.json({ message: "UnFriend request accepted" });
     } catch (err) {
         console.error("Error unfriend:", err);
