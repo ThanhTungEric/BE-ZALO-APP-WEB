@@ -45,7 +45,7 @@ router.post('/create-group', async (req, res) => {
             groupDeputy: [],
             createdAt: new Date(),
             avatar: 'https://www.w3schools.com/howto/img_avatar.png',
-            link: 'https://www.w3schools.com/howto/img_avatar.png',
+            link: '',
         });
         const group = await newGroup.save();
         res.json(group);
@@ -591,5 +591,62 @@ router.get('/id/:id', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
-
+// get all group by member id  
+/**
+ * @openapi
+ * '/api/group/member/{id}':
+ *  get:
+ *     tags:
+ *     - GROUP API
+ *     summary: Get all group by member ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the member to get all group
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Group not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/member/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const group = await groupModel.find({ groupMembers: id });
+        res.status(200).json(group);
+    } catch (err) {
+        console.error("Error getting group:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+//get all group
+/**
+ * @openapi
+ * '/api/group/all':
+ *  get:
+ *     tags:
+ *     - GROUP API
+ *     summary: Get all group
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Group not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/all', async (req, res) => {
+    try {
+        const group = await groupModel.find();
+        res.status(200).json(group);
+    } catch (err) {
+        console.error("Error getting group:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 module.exports = router;
