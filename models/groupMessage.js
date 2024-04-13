@@ -23,3 +23,6 @@ const GroupMessageSchema = new Schema({
     {
         timestamps: true,
     });
+
+const GroupMessage = mongoose.model('GroupMessage', GroupMessageSchema);
+module.exports = GroupMessage;

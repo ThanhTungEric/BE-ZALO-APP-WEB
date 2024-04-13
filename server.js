@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const url = process.env.ATLAS_URI;
 const socket = require('socket.io');
+const swaggerUI = require('swagger-ui-express');
 
 var app = express();
 require('dotenv').config();
@@ -23,13 +24,16 @@ app.use('/user/', routerUser);
 app.use('/friend', require('./router/friendRouter'));
 app.use('/api/messages', require('./router/apiMesage'));
 app.use('/api/upload', require('./router/upload-file'));
+app.use('/api/group', require('./router/groupRouter'));
+app.use('/groupMessage', require('./router/groupMessageRouter'));
+const swaggerSpec = require('./swagger');
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// const hostName = "192.168.1.28";
-const hostName = "192.168.1.17"
+const hostName = "192.168.1.17";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
