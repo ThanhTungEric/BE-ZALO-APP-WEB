@@ -23,8 +23,6 @@ app.use('/user/', routerUser);
 app.use('/friend', require('./router/friendRouter'));
 app.use('/api/messages', require('./router/apiMesage'));
 app.use('/api/upload', require('./router/upload-file'));
-// app.use('/api/group', require('./router/apiGroup'));
-app.use('/api/group', require('./router/apiGroup'));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
