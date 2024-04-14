@@ -25,7 +25,7 @@ app.use('/friend', require('./router/friendRouter'));
 app.use('/api/messages', require('./router/apiMesage'));
 app.use('/api/upload', require('./router/upload-file'));
 app.use('/api/group', require('./router/groupRouter'));
-app.use('/groupMessage', require('./router/groupMessageRouter'));
+app.use('/api/groupMessage', require('./router/groupMessageRouter'));
 const swaggerSpec = require('./swagger');
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
