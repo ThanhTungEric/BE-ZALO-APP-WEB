@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const groupModel = require('../models/group');
+const userModel = require('../models/UserModel');
 /** POST Methods */
 /**
  * @openapi
@@ -647,6 +648,50 @@ router.get('/all', async (req, res) => {
     } catch (err) {
         console.error("Error getting group:", err);
         res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+// get infor user by id-group
+/**
+ * @openapi
+ * '/api/group/get-member/{groupId}':
+ *  get:
+ *     tags:
+ *     - GROUP API
+ *     summary: Get all member by group ID
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         description: ID of the group to get all member
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Group not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/get-member/:groupId', async (req, res, next) => {
+    try {
+        const { groupId } = req.params;
+        const groupInfo = await groupModel.findById(groupId);
+        if (!groupInfo) {
+            return res.status(404).json({ msg: "Group not found" });
+        }
+        try {
+            // get list user info 
+            const users = await userModel.find({ _id: { $in: groupInfo.groupMembers } });
+            return res.json(users);
+        }
+        catch (err) {
+            console.error("Error getting user info:", err);
+            return res.status(500).json({ msg: "Internal server error" });
+        }
+    } catch (ex) {
+        next(ex);
     }
 });
 module.exports = router;

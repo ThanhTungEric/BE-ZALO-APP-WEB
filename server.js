@@ -25,6 +25,7 @@ app.use('/friend', require('./router/friendRouter'));
 app.use('/api/messages', require('./router/apiMesage'));
 app.use('/api/upload', require('./router/upload-file'));
 app.use('/api/group', require('./router/groupRouter'));
+app.use('/api/groupMessage', require('./router/groupMessageRouter'));
 const swaggerSpec = require('./swagger');
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
@@ -32,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "192.168.1.6";
+const hostName = "172.20.57.208";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -81,6 +82,12 @@ io.on("connection", (socket) => {
     const { messageId } = data;
     io.emit("msg-recall", { messageId });
   });
+  //video call dùng socket và ZegoUIKitPrebuilt
+  socket.on('initiate-call', (data) => {
+    const { receiverId } = data;
+    io.emit('call-initiated', { message: 'Cuộc gọi đã được khởi tạo' });
+  });
+
 });
 
 module.exports = app;

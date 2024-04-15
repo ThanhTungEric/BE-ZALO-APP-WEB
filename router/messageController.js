@@ -14,7 +14,6 @@ module.exports.getMessages = async (req, res, next) => {
       return {
         fromSelf: msg.sender.toString() === from,
         message: msg.message.text,
-        //tui them id de xoa tin nhan o day nhe
         _id: msg._id, // Thêm trường _id vào kết quả trả về
       };
     });
