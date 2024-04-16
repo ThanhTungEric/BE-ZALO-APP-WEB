@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "172.20.57.208";
+const hostName = "192.168.1.6";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -87,7 +87,15 @@ io.on("connection", (socket) => {
     const { receiverId } = data;
     io.emit('call-initiated', { message: 'Cuộc gọi đã được khởi tạo' });
   });
-
+  // group chat socket
+  socket.on("join-room", (data) => {
+    const { groupId } = data;
+    socket.join(groupId);
+  });
+  socket.on("send-group-msg", (data) => {
+    const { groupId, msg, from } = data;
+    socket.to(groupId).emit("recieve-group-msg", { msg, from });
+  });
 });
 
 module.exports = app;
