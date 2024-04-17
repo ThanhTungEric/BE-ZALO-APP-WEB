@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "172.20.57.246";
+const hostName = "192.168.1.8";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -85,8 +85,6 @@ io.on("connection", (socket) => {
   //video call dùng socket và ZegoUIKitPrebuilt
   socket.on('initiate-call', (data) => {
     const { receiverId } = data;
-    // Xử lý và phản hồi lại cho máy khách
-    // ở đây có thể thực hiện kiểm tra và các thao tác khác
     io.emit('call-initiated', { message: 'Cuộc gọi đã được khởi tạo' });
   });
 
