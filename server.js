@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "192.168.1.6";
+const hostName = "192.168.43.154";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
   });
   socket.on("send-group-msg", (data) => {
     const { groupId, msg, from } = data;
-    socket.to(groupId).emit("recieve-group-msg", { msg, from });
+    socket.to(groupId).emit("recieve-group-msg", { msg, from, groupId });
   });
 });
 

@@ -47,7 +47,7 @@ router.post('/send-message/:groupId', async (req, res, next) => {
         const { from, message } = req.body;
         const { groupId } = req.params;
         const groupInfo = await Group.findById(groupId);
-        if (!groupInfo || !groupInfo.groupMembers.includes(from)) {
+        if (!groupInfo) {
             return res.status(400).json({ msg: "Sender is not a member of the group" });
         }
 
