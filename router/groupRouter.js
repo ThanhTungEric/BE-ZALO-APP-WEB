@@ -385,8 +385,12 @@ router.post('/change-admin', async (req, res) => {
  *  post:
  *     tags:
  *     - GROUP API
+<<<<<<< HEAD
  *     summary: Change group name
  *     description: Change the name of a group based on groupId and newName.
+=======
+ *     summary: Rename of group
+>>>>>>> 0c416656187df671992ffcd9717bd13a3f98d852
  *     requestBody:
  *      required: true
  *      content:
