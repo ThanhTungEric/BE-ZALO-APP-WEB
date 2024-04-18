@@ -87,7 +87,25 @@ io.on("connection", (socket) => {
     const { receiverId } = data;
     io.emit('call-initiated', { message: 'Cuộc gọi đã được khởi tạo' });
   });
-
+  // group chat socket
+  socket.on("join-room", (data) => {
+    const { groupId } = data;
+    socket.join(groupId);
+  });
+  socket.on("send-group-msg", (data) => {
+    const { groupId, msg, from } = data;
+    socket.to(groupId).emit("recieve-group-msg", { msg, from, groupId });
+  });
+  //delete-group-msg
+  socket.on("delete-group-msg", async (data) => {
+    const { messageId, groupId } = data;
+    socket.to(groupId).emit("group-msg-delete", { messageId });
+  });
+  //recall-group-msg
+  socket.on("recall-group-msg", async (data) => {
+    const { messageId, groupId } = data;
+    socket.to(groupId).emit("group-msg-recall", { messageId });
+  });
 });
 
 module.exports = app;

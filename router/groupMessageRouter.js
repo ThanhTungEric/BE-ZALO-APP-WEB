@@ -44,17 +44,17 @@ const Group = require('../models/group');
  */
 router.post('/send-message/:groupId', async (req, res, next) => {
     try {
-        const { sender, message } = req.body;
+        const { from, message } = req.body;
         const { groupId } = req.params;
         const groupInfo = await Group.findById(groupId);
-        if (!groupInfo || !groupInfo.groupMembers.includes(sender)) {
+        if (!groupInfo) {
             return res.status(400).json({ msg: "Sender is not a member of the group" });
         }
 
         const data = await GroupMessage.create({
             message: { text: message },
             users: groupInfo.groupMembers,
-            sender: sender,
+            sender: from,
             group: groupId,  // Sử dụng groupId từ URL params
         });
 
@@ -66,24 +66,33 @@ router.post('/send-message/:groupId', async (req, res, next) => {
 });
 
 //API get all messages in a group
-/** GET Methods */
+/** POST Methods */
 /**
  * @openapi
- * '/api/groupMessage/get-messages/{groupId}':
- *  get:
+ * '/api/groupMessage/get-messages':
+ *  post:
  *     tags:
  *     - GROUP MESSAGE API
  *     summary: Get all messages in a group
- *     parameters:
- *       - in: path
- *         name: groupId
- *         schema:
- *           type: string
- *         required: true
- *         description: ID of the group to get messages from
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - groupId
+ *              - userId
+ *            properties:
+ *              groupId:
+ *               type: string
+ *               description: Group ID
+ *              userId:
+ *                type: string
+ *                description: User ID
  *     responses:
  *      200:
- *        description: Return all messages in the group
+ *        description: Messages found in the group chat
  *        content:
  *          application/json:
  *            schema:
@@ -94,55 +103,53 @@ router.post('/send-message/:groupId', async (req, res, next) => {
  *                  items:
  *                    type: object
  *                    properties:
+ *                      fromSelf:
+ *                        type: boolean
+ *                        description: True if the message is sent by the user
+ *                      message:
+ *                        type: string
+ *                        description: Message content
  *                      _id:
  *                        type: string
  *                        description: Message ID
- *                      message:
- *                        type: object
- *                        properties:
- *                          text:
- *                            type: string
- *                            description: Message content
- *                      users:
- *                        type: array
- *                        items:
- *                          type: string
- *                          description: IDs of users in the group
- *                      sender:
- *                        type: string
- *                        description: Sender ID
- *                      group:
- *                        type: string
- *                        description: Group ID
- *                      createdAt:
- *                        type: string
- *                        format: date-time
- *                        description: Message creation date
- *                      updatedAt:
- *                        type: string
- *                        format: date-time
- *                        description: Message last update date
  *      404:
  *        description: No messages found in the group chat
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                msg:
+ *                  type: string
+ *                  description: Error message
  *      500:
  *        description: Server Error
  */
-router.get('/get-messages/:groupId', async (req, res, next) => {
+router.post('/get-messages', async (req, res, next) => {
     try {
-        const { groupId } = req.params; // Lấy groupId từ URL params
+        // Lấy groupId and userId từ body request
+        const { groupId , userId } = req.body;
 
         const messages = await GroupMessage.find({ group: groupId })
-            .sort({ createdAt: 1 })
+            .sort({ createdAt: 1 });
 
         if (!messages || messages.length === 0) {
             return res.status(404).json({ msg: "No messages found in the group chat" });
         }
 
-        return res.json({ messages: messages });
+        const projectedMessages = messages.map(msg => ({
+            fromSelf: msg.sender.toString() === userId,
+            message: msg.message.text,
+            sender: msg.sender,
+            _id: msg._id
+        }));
+
+        return res.json(projectedMessages);
     } catch (ex) {
         next(ex);
     }
 });
+
 
 //API delete message
 /** DELETE Methods */

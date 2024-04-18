@@ -45,9 +45,14 @@ router.post('/create-group', async (req, res) => {
             groupAdmin,
             groupDeputy: [],
             createdAt: new Date(),
-            avatar: 'https://www.w3schools.com/howto/img_avatar.png',
+            avatar: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/avatar_group.png',
             link: '',
         });
+        //group member > 2
+        if (groupMembers.length < 2) {
+            res.status(400).json({ message: "Group member must be greater than 2" });
+            return;
+        }
         const group = await newGroup.save();
         res.json(group);
     } catch (err) {
@@ -373,14 +378,15 @@ router.post('/change-admin', async (req, res) => {
     }
 });
 
-// rename group
+// chang admin 
 /**
  * @openapi
- * '/api/group/change-admin':
+ * '/api/group/rename-group':
  *  post:
  *     tags:
  *     - GROUP API
- *     summary: Change admin of group
+ *     summary: Change group name
+ *     description: Change the name of a group based on groupId and newName.
  *     requestBody:
  *      required: true
  *      content:
@@ -389,30 +395,31 @@ router.post('/change-admin', async (req, res) => {
  *            type: object
  *            required:
  *              - groupId
- *              - adminId
- *              - newAdminId
+ *              - idMember
+ *              - newName
  *            properties:
  *              groupId:
  *                type: string
- *                default: 60f3b1b3b3b3b3b3b3b3b3b3
- *              adminId:
+ *                description: ID of the group to rename
+ *              idMember:
  *                type: string
- *                default: 60f3b1b3b3b3b3b3b3b3b3b3
+ *                description: ID of the member requesting the change
  *              newName:
  *                type: string
- *                default: NEW NAME
+ *                description: New name for the group
  *     responses:
  *       200: 
- *         description: Admin changed successfully.
+ *         description: Group name changed successfully.
  *       401:
  *         description: New name is the same as the old name.
  *       403:
- *         description: You are not the admin of this group.
+ *         description: The requester is not a member of this group.
  *       404:
  *         description: Group not found.
  *       500:
  *         description: Internal server error.
  */
+
 router.post('/rename-group', async (req, res) => {
     const { groupId, idMember, newName } = req.body;
     try {
@@ -420,11 +427,17 @@ router.post('/rename-group', async (req, res) => {
         if (!group) {
             res.status(404).json({ message: "Group not found" });
             return;
-        } else if (group.groupMembers.indexOf(idMember) === -1) {
-            res.status(403).json({ message: "You are not a member of this group" });
+        }
+        if (String(group.groupAdmin) !== String(idMember)) {
+            res.status(403).json({ message: "You are not the admin of this group" });
             return;
-        } else if (group.groupName === newName) {
+        }
+        if (group.groupName === newName) {
             res.status(401).json({ message: "New name is the same as the old name" });
+            return;
+        }
+        if (!newName) {
+            res.status(400).json({ message: "New name cannot be empty" });
             return;
         }
         group.groupName = newName;
@@ -435,6 +448,9 @@ router.post('/rename-group', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
+
 // delete group
 /**
  * @openapi
