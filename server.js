@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "192.168.43.154";
+const hostName = "cotachat-49ff57b6c2b9.herokuapp.com";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
