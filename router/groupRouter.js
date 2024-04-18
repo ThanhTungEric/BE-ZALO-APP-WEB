@@ -139,9 +139,6 @@ router.post('/add-member', async (req, res) => {
  *              memberId:
  *                type: string
  *                default: 60f3b1b3b3b3b3b3b3b3b3b3
- *              createById:
- *                type: string
- *                default: 60f3b1b3b3b3b3b3b3b3b3b3
  *     responses:
  *       200: 
  *         description: Member removed from the group successfully.
@@ -157,7 +154,7 @@ router.post('/add-member', async (req, res) => {
  *         description: Internal server error.
  */
 router.post('/remove-member', async (req, res) => {
-    const { groupId, memberId, createById } = req.body;
+    const { groupId, memberId} = req.body;
     try {
         const group = await groupModel.findById(groupId);
         if (!group) {
@@ -168,10 +165,7 @@ router.post('/remove-member', async (req, res) => {
         if (memberIndex === -1) {
             res.status(402).json({ message: "Member not found in group" });
             return;
-        } else if (group.groupAdmin !== createById || group.groupDeputy.indexOf(createById) === -1) {
-            res.status(403).json({ message: "Only the admin or deputy can remove a member" });
-            return;
-        } else if (group.groupAdmin === memberId) {
+        }  else if (group.groupAdmin === memberId) {
             res.status(401).json({ message: "Admin cannot be removed" });
             return;
         }
