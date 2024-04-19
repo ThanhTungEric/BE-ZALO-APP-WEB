@@ -49,7 +49,7 @@ router.post('/create-group', async (req, res) => {
             link: '',
         });
         //group member > 2
-        if(groupMembers.length < 2){
+        if (groupMembers.length < 2) {
             res.status(400).json({ message: "Group member must be greater than 2" });
             return;
         }
@@ -131,7 +131,6 @@ router.post('/add-member', async (req, res) => {
  *            required:
  *              - groupId
  *              - memberId
- *              - createById
  *            properties:
  *              groupId:
  *                type: string
@@ -154,7 +153,7 @@ router.post('/add-member', async (req, res) => {
  *         description: Internal server error.
  */
 router.post('/remove-member', async (req, res) => {
-    const { groupId, memberId} = req.body;
+    const { groupId, memberId, createById } = req.body;
     try {
         const group = await groupModel.findById(groupId);
         if (!group) {
@@ -165,7 +164,10 @@ router.post('/remove-member', async (req, res) => {
         if (memberIndex === -1) {
             res.status(402).json({ message: "Member not found in group" });
             return;
-        }  else if (group.groupAdmin === memberId) {
+        } else if (group.groupAdmin !== createById || group.groupDeputy.indexOf(createById) === -1) {
+            res.status(403).json({ message: "Only the admin or deputy can remove a member" });
+            return;
+        } else if (group.groupAdmin === memberId) {
             res.status(401).json({ message: "Admin cannot be removed" });
             return;
         }
@@ -386,7 +388,12 @@ router.post('/change-admin', async (req, res) => {
  *  post:
  *     tags:
  *     - GROUP API
+<<<<<<< HEAD
+ *     summary: Change group name
+ *     description: Change the name of a group based on groupId and newName.
+=======
  *     summary: Rename of group
+>>>>>>> 0c416656187df671992ffcd9717bd13a3f98d852
  *     requestBody:
  *      required: true
  *      content:
@@ -395,30 +402,31 @@ router.post('/change-admin', async (req, res) => {
  *            type: object
  *            required:
  *              - groupId
- *              - adminId
- *              - newAdminId
+ *              - idMember
+ *              - newName
  *            properties:
  *              groupId:
  *                type: string
- *                default: 60f3b1b3b3b3b3b3b3b3b3b3
- *              adminId:
+ *                description: ID of the group to rename
+ *              idMember:
  *                type: string
- *                default: 60f3b1b3b3b3b3b3b3b3b3b3
+ *                description: ID of the member requesting the change
  *              newName:
  *                type: string
- *                default: NEW NAME
+ *                description: New name for the group
  *     responses:
  *       200: 
- *         description: Admin changed successfully.
+ *         description: Group name changed successfully.
  *       401:
  *         description: New name is the same as the old name.
  *       403:
- *         description: You are not the admin of this group.
+ *         description: The requester is not a member of this group.
  *       404:
  *         description: Group not found.
  *       500:
  *         description: Internal server error.
  */
+
 router.post('/rename-group', async (req, res) => {
     const { groupId, idMember, newName } = req.body;
     try {
@@ -426,11 +434,17 @@ router.post('/rename-group', async (req, res) => {
         if (!group) {
             res.status(404).json({ message: "Group not found" });
             return;
-        } else if (group.groupMembers.indexOf(idMember) === -1) {
-            res.status(403).json({ message: "You are not a member of this group" });
+        }
+        if (String(group.groupAdmin) !== String(idMember)) {
+            res.status(403).json({ message: "You are not the admin of this group" });
             return;
-        } else if (group.groupName === newName) {
+        }
+        if (group.groupName === newName) {
             res.status(401).json({ message: "New name is the same as the old name" });
+            return;
+        }
+        if (!newName) {
+            res.status(400).json({ message: "New name cannot be empty" });
             return;
         }
         group.groupName = newName;
@@ -441,6 +455,9 @@ router.post('/rename-group', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
+
 // delete group
 /**
  * @openapi

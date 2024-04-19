@@ -98,6 +98,16 @@ io.on("connection", (socket) => {
     //send notification to all users in the group
     socket.to(groupId).emit("group-msg-notification", { msg, from, groupId });
   });
+  //delete-group-msg
+  socket.on("delete-group-msg", async (data) => {
+    const { messageId, groupId } = data;
+    socket.to(groupId).emit("group-msg-delete", { messageId });
+  });
+  //recall-group-msg
+  socket.on("recall-group-msg", async (data) => {
+    const { messageId, groupId } = data;
+    socket.to(groupId).emit("group-msg-recall", { messageId });
+  });
 });
 
 module.exports = app;
