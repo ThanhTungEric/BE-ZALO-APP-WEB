@@ -38,15 +38,14 @@ module.exports = { upload };
 router.post('/file', upload.single('file'), (req, res) => {
   res.json(req.file.location);
 });
+
 router.get('/download', function (req, res) {
   const file = req.query.file;
-
   const s3 = new AWS.S3({});
   const options = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: file,
   };
-
   s3.getObject(options, function (err, data) {
     if (err) {
       console.error('Error getting object from S3:', err);

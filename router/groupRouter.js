@@ -115,6 +115,7 @@ router.post('/add-member', async (req, res) => {
     }
 });
 // remove member from group
+// remove member from group
 /**
  * @openapi
  * '/api/group/remove-member':
@@ -131,6 +132,7 @@ router.post('/add-member', async (req, res) => {
  *            required:
  *              - groupId
  *              - memberId
+ *              - createById
  *            properties:
  *              groupId:
  *                type: string
@@ -153,7 +155,7 @@ router.post('/add-member', async (req, res) => {
  *         description: Internal server error.
  */
 router.post('/remove-member', async (req, res) => {
-    const { groupId, memberId, createById } = req.body;
+    const { groupId, memberId} = req.body;
     try {
         const group = await groupModel.findById(groupId);
         if (!group) {
@@ -164,14 +166,15 @@ router.post('/remove-member', async (req, res) => {
         if (memberIndex === -1) {
             res.status(402).json({ message: "Member not found in group" });
             return;
-        } else if (group.groupAdmin !== createById || group.groupDeputy.indexOf(createById) === -1) {
-            res.status(403).json({ message: "Only the admin or deputy can remove a member" });
-            return;
-        } else if (group.groupAdmin === memberId) {
+        }  else if (group.groupAdmin === memberId) {
             res.status(401).json({ message: "Admin cannot be removed" });
             return;
         }
         group.groupMembers.splice(memberIndex, 1);
+        const deputyIndex = group.groupDeputy.indexOf(memberId);
+        if (deputyIndex !== -1) {
+            group.groupDeputy.splice(deputyIndex, 1);
+        }
         const groupData = await group.save();
         res.json(groupData);
 
@@ -388,12 +391,7 @@ router.post('/change-admin', async (req, res) => {
  *  post:
  *     tags:
  *     - GROUP API
-<<<<<<< HEAD
- *     summary: Change group name
- *     description: Change the name of a group based on groupId and newName.
-=======
  *     summary: Rename of group
->>>>>>> 0c416656187df671992ffcd9717bd13a3f98d852
  *     requestBody:
  *      required: true
  *      content:
