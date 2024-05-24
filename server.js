@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "192.168.1.9";
+const hostName = "172.20.32.25";
 const port = process.env.PORT || 8080;
 const uri = process.env.ATLAS_URI;
 
@@ -108,6 +108,18 @@ io.on("connection", (socket) => {
     const { messageId, groupId } = data;
     socket.to(groupId).emit("group-msg-recall", { messageId });
   });
+
+	socket.on("disconnect", () => {
+		socket.broadcast.emit("callEnded")
+	})
+
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	})
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
 });
 
 module.exports = app;

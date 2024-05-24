@@ -36,8 +36,16 @@ const upload = multer({
 module.exports = { upload };
 
 router.post('/file', upload.single('file'), (req, res) => {
-  res.json(req.file.location);
+  try {
+    if (!req.file) {
+      throw new Error('No file uploaded');
+    }
+    res.json(req.file.location);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
+
 
 router.get('/download', function (req, res) {
   const file = req.query.file;

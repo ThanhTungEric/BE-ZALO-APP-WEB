@@ -15,6 +15,7 @@ module.exports.getMessages = async (req, res, next) => {
         fromSelf: msg.sender.toString() === from,
         message: msg.message.text,
         _id: msg._id, // Thêm trường _id vào kết quả trả về
+        createdAt: msg.createdAt,
       };
     });
     res.json(projectedMessages);
@@ -73,7 +74,6 @@ module.exports.recallMessageById = async (req, res, next) => {
     next(ex);
   }
 };
-
 
 
 
