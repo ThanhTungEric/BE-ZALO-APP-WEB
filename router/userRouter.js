@@ -2,7 +2,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const UserModel = require('../models/UserModel');
 const routerUser = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 
 //upload file

@@ -33,8 +33,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "172.20.32.25";
-const port = process.env.PORT || 8080;
+const hostName = "0.0.0.0";
+const port = process.env.PORT || 9090;
 const uri = process.env.ATLAS_URI;
 
 const server = app.listen(port, hostName, () => {
