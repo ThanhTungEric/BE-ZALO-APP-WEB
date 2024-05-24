@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const hostName = "0.0.0.0";
+const hostName = "localhost";
 const port = process.env.PORT || 9090;
 const uri = process.env.ATLAS_URI;
 
@@ -48,7 +48,7 @@ mongoose.connect(uri, {
 
 const io = socket(server, {
   cors: {
-    origin: ['http://localhost:3000', 'http://192.168.1.8:8081'],
+    origin: ['http://localhost:3000'],
     credential: true,
   }
 });
