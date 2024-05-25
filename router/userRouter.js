@@ -135,6 +135,25 @@ routerUser.delete('/:id', async (req, res) => {
 }
 );
 
+// routerUser.post('/login', async (req, res, next) => {
+//     try {
+//         const { phoneNumber, password } = req.body;
+//         const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+//         if (!user) {
+//             return res.status(405).json({ "can't find user with this phoneNumber": phoneNumber, status: false });
+//         }
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+//         if (!isPasswordValid) {
+//             return res.status(404).json({ "password is incorrect": password, status: false });
+//         }
+//         delete user.password;
+//         res.status(200).json(user);
+//     }
+//     catch (err) {
+//         console.log(err.message);
+//         res.status(500).json({ message: err.message });
+//     }
+// });
 routerUser.post('/login', async (req, res, next) => {
     try {
         const { phoneNumber, password } = req.body;
@@ -146,14 +165,43 @@ routerUser.post('/login', async (req, res, next) => {
         if (!isPasswordValid) {
             return res.status(404).json({ "password is incorrect": password, status: false });
         }
+        await UserModel.findByIdAndUpdate(user._id, { status: 'online' }); // Cập nhật trạng thái thành "online" khi đăng nhập
         delete user.password;
         res.status(200).json(user);
     }
     catch (err) {
-        console.log(err.message);
+        console.error(err.message);
         res.status(500).json({ message: err.message });
     }
 });
+
+routerUser.post('/logout', async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        await UserModel.findByIdAndUpdate(userId, { status: 'offline' }); // Cập nhật trạng thái thành "offline" khi đăng xuất
+        res.status(200).json({ message: 'User logged out successfully' });
+    }
+    catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+routerUser.get('/status/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng với id này" });
+        }
+        res.status(200).json({ status: user.status });
+    } catch (err) {
+        console.error('Error getting user status:', err);
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
 // get usser by phone number
 routerUser.get('/phoneNumber/:phoneNumber', async (req, res) => {
     try {
@@ -236,5 +284,8 @@ routerUser.put('/changePassword/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 }
+    //login to get status
+
+
 );
 module.exports = routerUser;

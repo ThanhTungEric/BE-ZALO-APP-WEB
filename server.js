@@ -48,7 +48,7 @@ mongoose.connect(uri, {
 
 const io = socket(server, {
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: ['http://14.225.206.237'],
     credential: true,
   }
 });
