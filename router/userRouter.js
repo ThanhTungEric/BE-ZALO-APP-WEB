@@ -52,40 +52,42 @@ routerUser.get('/', (req, res, next) => {
         })
 });
 routerUser.post('/', upload.single('avatar'), async (req, res) => {
-    var password = await bcrypt.hash(req.body.password, 10);
-    var fullName = req.body.fullName;
-    var birthDate = req.body.birthDate;
-    var email = req.body.email;
-    var phoneNumber = req.body.phoneNumber;
-    var status = req.body.status;
-    var avatar = req.file ? req.file.location : 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/user.png';
+    try {
+        const password = await bcrypt.hash(req.body.password, 10);
+        const fullName = req.body.fullName;
+        let birthDate = req.body.birthDate;
+        const email = req.body.email;
+        const phoneNumber = req.body.phoneNumber;
+        const status = req.body.status;
+        const avatar = req.file ? req.file.location : 'https://cdn.iconscout.com/icon/free/png-256/free-avatar-370-456322.png';
 
-    UserModel.findOne({ phoneNumber: phoneNumber })
-        .then((account) => {
-            if (account) {
-                res.status(500).json('phonenumber already exists');
-            }
-            else {
-                return UserModel.create({
-                    password: password,
-                    fullName: fullName,
-                    birthDate: birthDate,
-                    email: email,
-                    phoneNumber: phoneNumber,
-                    status: status,
-                    avatar: avatar
-                })
-            }
-        })
-        .then((data) => {
-            res.status(201).json(data);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).json({ error: err.message });
+
+        if (!birthDate.includes('T')) {
+            birthDate += 'T17:00:00.000Z';
+        }
+
+        const existingUser = await UserModel.findOne({ phoneNumber: phoneNumber });
+        if (existingUser) {
+            return res.status(500).json('phonenumber already exists');
+        }
+
+        const newUser = await UserModel.create({
+            password: password,
+            fullName: fullName,
+            birthDate: birthDate,
+            email: email,
+            phoneNumber: phoneNumber,
+            status: status,
+            avatar: avatar
         });
 
+        res.status(201).json(newUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
+
 //get user by id
 routerUser.get('/id/:id', async (req, res) => {
     try {
