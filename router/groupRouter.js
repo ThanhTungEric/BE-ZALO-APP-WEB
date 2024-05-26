@@ -45,7 +45,7 @@ router.post('/create-group', async (req, res) => {
             groupAdmin,
             groupDeputy: [],
             createdAt: new Date(),
-            avatar: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/avatar_group.png',
+            avatar: 'https://cototaapp.s3.ap-southeast-2.amazonaws.com/tao-dang-chup-anh-nhom-lay-loi__16__40a6040a3b7c484697b0de331fd5eb03.webp',
             link: '',
         });
         //group member > 2
