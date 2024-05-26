@@ -708,4 +708,52 @@ router.get('/get-member/:groupId', async (req, res, next) => {
         next(ex);
     }
 });
+//update avatar group
+/**
+ * @openapi
+ * '/api/group/update-avatar':
+ *  post:
+ *     tags:
+ *     - GROUP API
+ *     summary: Update avatar group
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - groupId
+ *              - avatar
+ *            properties:
+ *              groupId:
+ *                type: string
+ *                default: 60f3b1b3b3b3b3b3b3b3b3b3
+ *              avatar:
+ *                type: string
+ *                default: https://www.google.com
+ *     responses:
+ *       200: 
+ *         description: Avatar updated successfully.
+ *       404:
+ *         description: Group not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put('/update-avatar', async (req, res) => {
+    const { groupId, avatar } = req.body;
+    try {
+        const group = await groupModel.findById(groupId);
+        if (!group) {
+            res.status(404).json({ message: "Group not found" });
+            return;
+        }
+        group.avatar = avatar;
+        const groupData = await group.save();
+        res.json(groupData);
+    } catch (err) {
+        console.error("Error updating avatar:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 module.exports = router;
